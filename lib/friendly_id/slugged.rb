@@ -317,8 +317,23 @@ Github issue](https://github.com/norman/friendly_id/issues/185) for discussion.
     end
     private :scope_for_slug_generator
 
+    # This helps us looking for existing slugs which may have no relations
+    # anymore to an actual slugged object.
+    def history_scope
+      return unless self.respond_to?(:slugs)
+
+      scope = FriendlyId::Slug.where(sluggable_type: self.class.base_class.name)
+      unless self.new_record?
+        primary_key_name = self.class.primary_key
+        scope = scope.where(FriendlyId::Slug.arel_table[:sluggable_id].not_eq(send(primary_key_name)))
+      end
+      scope
+    end
+    private :history_scope
+
     def slug_generator
-      friendly_id_config.slug_generator_class.new(scope_for_slug_generator)
+      friendly_id_config.slug_generator_class
+        .new(scope_for_slug_generator, history_scope)
     end
     private :slug_generator
 

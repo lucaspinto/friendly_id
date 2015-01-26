@@ -104,6 +104,30 @@ class HistoryTest < Minitest::Test
     end
   end
 
+  test "should not destroy a slug when the object is deleted" do
+    transaction do
+      first_record = model_class.create! :name => "foo"
+      first_record.save!
+      first_record_slug = first_record.slugs.last
+      assert_equal 'foo', first_record_slug.slug
+      first_record.destroy
+      first_record_slug.reload
+      assert_equal nil, first_record_slug.sluggable_id
+    end
+  end
+
+  test 'should not take a slug from a deleted object' do
+    transaction do
+      first_record = model_class.create! :name => "foo"
+      first_record_slug = first_record.slugs.last
+      assert_equal 'foo', first_record_slug.slug
+      first_record.destroy
+      second_record = model_class.create! :name => "foo"
+      assert second_record.slug != "foo"
+      assert_match(/foo-.+/, second_record.slug)
+    end
+  end
+
   test 'should not fail when updating historic slugs' do
     transaction do
       first_record = model_class.create! :name => "foo"

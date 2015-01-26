@@ -1,5 +1,12 @@
-[![Build Status](https://travis-ci.org/norman/friendly_id.svg)](https://travis-ci.org/norman/friendly_id)
-[![Code Climate](https://codeclimate.com/github/norman/friendly_id.svg)](https://codeclimate.com/github/norman/friendly_id)
+# This repo is a fork of the friendly_id repo.
+## The difference
+In this fork the slugs of the delete objects
+which have the <em>history</em> option aren't destroyed but still stored;
+with a nullified <em>sluggable_type</em>. With a couple of other changes,
+it prevents the creation of an already exiting slug, if if it's object
+has been destroyed.
+
+
 [![Inline docs](http://inch-ci.org/github/norman/friendly_id.svg?branch=master)](http://inch-ci.org/github/norman/friendly_id)
 
 **GETTING HELP**

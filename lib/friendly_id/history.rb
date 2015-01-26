@@ -68,11 +68,13 @@ method.
     end
 
     # Configures the model instance to use the History add-on.
+    # This fork repalces destroy by nullify to keep the slugs
+    # of the deleted relations.
     def self.included(model_class)
       model_class.class_eval do
         has_many :slugs, -> {order("#{Slug.quoted_table_name}.id DESC")}, {
           :as         => :sluggable,
-          :dependent  => :destroy,
+          :dependent  => :nullify,
           :class_name => Slug.to_s
         }
 
@@ -128,6 +130,7 @@ method.
       end
       relation.delete_all
       slugs.create! do |record|
+        record.sluggable_type = self.class.name
         record.slug = friendly_id
         record.scope = serialized_scope if friendly_id_config.uses?(:scoped)
       end
